@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -30,6 +30,22 @@ def image_mars():
 @app.route('/promotion_image')
 def promotion_image():
     return render_template('promotion_image.html')
+
+
+@app.route('/astronaut_selection', methods=['GET', 'POST'])
+def astronaut_selection():
+    if request.method == 'GET':
+        return render_template('astronaut_selection.html')
+    elif request.method == 'POST':
+        print(request.form['surname'])
+        print(request.form['name'])
+        print(request.form['email'])
+        print(request.form['education'])
+        print(request.form['profession'])
+        print(request.form['motivation'])
+        print(request.form['gender'])
+        print(request.form['ready'])
+        return '<h1>Анкета отправлена</h1>'
 
 
 if __name__ == '__main__':

@@ -48,5 +48,11 @@ def astronaut_selection():
         return '<h1>Анкета отправлена</h1>'
 
 
+@app.route('/training/<prof>')
+def training(prof):
+    context = {'prof': prof}
+    return render_template('training.html', **context)
+
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080)

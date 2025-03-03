@@ -89,5 +89,11 @@ def login():
         return redirect('/')
 
 
+@app.route('/choice/<planet_name>')
+def choice(planet_name):
+    context = {'planet_name': planet_name}
+    return render_template('choice.html', **context)
+
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080)

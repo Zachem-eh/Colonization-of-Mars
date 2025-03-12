@@ -106,6 +106,14 @@ def results(nickname, level, rating):
     return render_template('results.html', **context)
 
 
+@app.route('/distribution')
+def distribution():
+    context = {
+        'astronauts': ['Ридли Скотт', "Энди Уир", "Марк Уотни", "Венката Капур", "Тедди Сандерс", "Шон Бин"]
+    }
+    return render_template('distribution.html', **context)
+
+
 if __name__ == '__main__':
     db_session.global_init('database/mars_explorer.db')
     app.run(host='127.0.0.1', port=8080)

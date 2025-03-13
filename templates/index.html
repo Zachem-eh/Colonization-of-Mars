@@ -16,9 +16,9 @@
         <td class="table-primary">{{ job.work_size }}
         <td class="table-primary">{{ job.collaborators }}
         {% if is_finished %}
-            <td class="table-success">{{ job.is_finished }}
+            <td class="table-success">Задача завершена
         {% else %}
-            <td class="table-danger">{{ job.is_finished }}
+            <td class="table-danger">Задача не завершена
         {% endif %}
     </table>
 {% endfor %}

@@ -117,6 +117,11 @@ def distribution():
     return render_template('distribution.html', **context)
 
 
+@app.route('/users', methods=['GET', 'POST'])
+def users():
+    return render_template('users.html')
+
+
 if __name__ == '__main__':
     db_session.global_init('database/mars_explorer.db')
     app.run(host='127.0.0.1', port=8080)

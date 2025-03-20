@@ -9,6 +9,7 @@ from data.jobs import Jobs
 from data.users import User
 import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from jobs_api import blueprint
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum'
@@ -201,4 +202,5 @@ def jobs():
 
 if __name__ == '__main__':
     db_session.global_init('database/mars_explorer.db')
+    app.register_blueprint(blueprint)
     app.run(host='127.0.0.1', port=8080)

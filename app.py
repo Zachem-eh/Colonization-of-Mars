@@ -228,6 +228,11 @@ def jobs():
     return render_template('jobs.html', form=form)
 
 
+@app.route('/table/<gender>/<int:age>')
+def table(gender, age):
+    return render_template('table.html', gender=gender, age=age)
+
+
 if __name__ == '__main__':
     db_session.global_init('database/mars_explorer.db')
     app.register_blueprint(blueprint)

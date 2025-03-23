@@ -41,6 +41,19 @@ class JobsForm(FlaskForm):
     submit = SubmitField('Добавить')
 
 
+class RegisterForm(FlaskForm):
+    login_email = StringField('Login / email')
+    password = PasswordField('Password')
+    repeat_password = PasswordField('Repeat password')
+    surname = StringField('Surname')
+    name = StringField('Name')
+    age = StringField('Age')
+    position = StringField('Position')
+    speciality = StringField('Speciality')
+    address = StringField('Address')
+    submit = SubmitField('Submit')
+
+
 @app.route('/')
 def main_page():
     session = db_session.create_session()
@@ -147,8 +160,23 @@ def distribution():
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def users():
-    return render_template('register.html')
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        sess = db_session.create_session()
+        user = User()
+        user.email = form.login_email.data
+        user.hashed_password = form.password.data
+        user.surname = form.surname.data
+        user.name = form.name.data
+        user.age = int(form.age.data)
+        user.position = form.position.data
+        user.speciality = form.speciality.data
+        user.address = form.address.data
+        sess.add(user)
+        sess.commit()
+        return redirect('/')
+    return render_template('register.html', form=form)
 
 
 @app.route('/cookie')

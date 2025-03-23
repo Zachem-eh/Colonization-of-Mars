@@ -16,10 +16,10 @@ def get_jobs():
     })
 
 
-@blueprint.route('/api/jobs/<int:id>')
-def get_jobs_id(id):
+@blueprint.route('/api/jobs/<int:jobs_id>')
+def get_jobs_id(jobs_id):
     sess = db_session.create_session()
-    job = sess.query(Jobs).filter(Jobs.id == id).first()
+    job = sess.query(Jobs).filter(Jobs.id == jobs_id).first()
     if not job:
         return make_response(jsonify({'status': 'Not found'}, 404))
     return jsonify({ 'job': job.to_dict(only=('id', 'user.name', 'job', 'work_size', 'collaborators',
@@ -43,3 +43,14 @@ def create_jobs():
     sess.add(jobs)
     sess.commit()
     return jsonify({'jobs.id': jobs.id})
+
+
+@blueprint.route('/api/jobs/<int:jobs_id>', methods=['DELETE'])
+def delete_jobs(jobs_id):
+    sess = db_session.create_session()
+    job = sess.query(Jobs).get(jobs_id)
+    if not job:
+        return make_response(jsonify({'error': 'Not found'}), 404)
+    sess.delete(job)
+    sess.commit()
+    return jsonify({'success': 'OK'})

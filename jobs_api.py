@@ -31,7 +31,7 @@ def create_jobs():
     if not request.json:
         return make_response(jsonify({'error': 'Bad request'}), 400)
     column = ['team_leader', 'job', 'collaborators', 'work_size', 'is_finished']
-    if  not all([key in column for key in request.json]):
+    if not all([key in column for key in request.json]):
         return make_response(jsonify({'error': 'Bad request'}), 400)
     sess = db_session.create_session()
     jobs = Jobs()

@@ -2,50 +2,90 @@
 {% block content %}
 <div class="container mt-5">
 <h2>Register form</h2>
-     <div class="row">
-        <div class="col">
-            <form method="post" action="register">
-                <div class="mb-3">
-                     <label class="form-input-label" for="login_email">Login / email</label>
-                     <input type="text" class="form-control" name="login_email" id="login_email">
-                </div>
-                <div class="mb-3">
-                    <label class="form-input-label" for="password">Password</label>
-                    <input type="password" class="form-control" name="password" id="password">
-                </div>
-                <div class="mb-3">
-                    <label class="form-input-label" for="repeat_password">Repeat password</label>
-                    <input type="password" class="form-control" name="repeat_password" id="repeat_password">
-                </div>
-                <div class="mb-3">
-                    <label class="form-input-label" for="surname">Surname</label>
-                    <input type="text" class="form-control" name="surname" id="surname">
-                </div>
-                <div class="mb-3">
-                    <label class="form-input-label" for="name">Name</label>
-                    <input type="text" class="form-control" name="name" id="name">
-                </div>
-                <div class="mb-3">
-                    <label class="form-input-label" for="age">Age</label>
-                    <input type="number" class="form-control" name="age" id="age">
-                </div>
-                <div class="mb-3">
-                    <label class="form-input-label" for="position">Position</label>
-                    <input type="text" class="form-control" name="position" id="position">
-                </div>
-                <div class="mb-3">
-                    <label class="form-input-label" for="speciality">Speciality</label>
-                    <input type="text" class="form-control" name="speciality" id="speciality">
-                </div>
-                <div class="mb-3">
-                    <label class="form-input-label" for="address">Address</label>
-                    <input type="text" class="form-control" name="address" id="address">
-                </div>
-                <div class="mb-3">
-                    <input type="submit" value="Submit" class="btn btn-primary">
-                </div>
-            </form>
+    <form action="register" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.login_email.label }}<br>
+        {{ form.login_email(class="form-control") }}<br>
+        {% for error in form.login_email.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(class="form-control") }}<br>
+        {% for error in form.password.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.repeat_password.label }}<br>
+        {{ form.repeat_password(class="form-control") }}<br>
+        {% for error in form.repeat_password.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.surname.label }}<br>
+        {{ form.surname(class="form-control") }}<br>
+        {% for error in form.surname.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+    {% endfor %}
+    </p>
+    <p>
+    {{ form.name.label }}<br>
+    {{ form.name(class="form-control") }}<br>
+    {% for error in form.name.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
         </div>
-     </div>
+    {% endfor %}
+    </p>
+    <p>
+    {{ form.age.label }}<br>
+    {{ form.age(class="form-control") }}<br>
+    {% for error in form.age.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endfor %}
+    </p>
+    <p>
+    {{ form.position.label }}<br>
+    {{ form.position(class="form-control") }}<br>
+    {% for error in form.position.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endfor %}
+    </p>
+    <p>
+    {{ form.speciality.label }}<br>
+    {{ form.speciality(class="form-control") }}<br>
+    {% for error in form.speciality.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endfor %}
+    </p>
+    <p>
+    {{ form.address.label }}<br>
+    {{ form.address(class="form-control") }}<br>
+    {% for error in form.address.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    </form>
 </div>
 {% endblock %}

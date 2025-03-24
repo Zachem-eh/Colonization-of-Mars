@@ -50,7 +50,7 @@ class UserListResource(Resource):
             age=args['age'],
             position=args['position'],
             speciality=args['speciality'],
-            address=ags['address'],
+            address=args['address'],
             email=args['email'],
             hashed_password=args['hashed_password']
         )

@@ -12,6 +12,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from jobs_api import blueprint
 from flask_restful import Api
 from user_resource import UserResource, UserListResource
+from jobs_resource import JobsResource, JobsListResource
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum'
@@ -20,6 +21,8 @@ app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 api = Api(app)
 api.add_resource(UserResource, '/api/v2/users/<int:user_id>')
 api.add_resource(UserListResource, '/api/v2/users')
+api.add_resource(JobsResource, '/api/v2/jobs/<int:jobs_id>')
+api.add_resource(JobsListResource, '/api/v2/jobs')
 
 login_manager = LoginManager()
 login_manager.init_app(app)

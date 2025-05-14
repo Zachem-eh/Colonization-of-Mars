@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, make_response, session
 from flask_wtf import FlaskForm
-from werkzeug.utils import redirect
-from wtforms import StringField, PasswordField, SubmitField
+from werkzeug.utils import redirect, secure_filename
+from wtforms import StringField, PasswordField, SubmitField, FileField
 from wtforms.fields.simple import EmailField, BooleanField
 from wtforms.validators import DataRequired
 from data import db_session
@@ -13,6 +13,7 @@ from jobs_api import blueprint
 from flask_restful import Api
 from user_resource import UserResource, UserListResource
 from jobs_resource import JobsResource, JobsListResource
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum'
@@ -27,6 +28,12 @@ api.add_resource(JobsListResource, '/api/v2/jobs')
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+img = False
+if len(os.listdir('static/images/load_photo')) >= 2:
+    for f in os.listdir('static/images/load_photo'):
+        if f != '.gitkeep':
+            img = f
+print(img)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -61,6 +68,13 @@ class RegisterForm(FlaskForm):
     speciality = StringField('Speciality')
     address = StringField('Address')
     submit = SubmitField('Submit')
+
+
+class LoadPhotoForm(FlaskForm):
+    cover = FileField('Приложите фотографию',
+                      validators=[DataRequired()],
+                      render_kw={'accept': 'image/*'})
+    submit = SubmitField('Отправить')
 
 
 @app.route('/')
@@ -240,6 +254,22 @@ def jobs():
 @app.route('/table/<gender>/<int:age>')
 def table(gender, age):
     return render_template('table.html', gender=gender, age=age)
+
+
+@app.route('/load_photo', methods=['GET', 'POST'])
+def load_photo():
+    global img
+    form = LoadPhotoForm()
+    if form.validate_on_submit():
+        if img:
+            os.remove(f'static/images/load_photo/{img}')
+        file = form.cover.data
+        filename = secure_filename(file.filename)
+        save_path = os.path.join('static/images/load_photo', filename)
+        file.save(save_path)
+        img = filename
+        return redirect('/load_photo')
+    return render_template('load_photo.html', form=form, img=img)
 
 
 if __name__ == '__main__':

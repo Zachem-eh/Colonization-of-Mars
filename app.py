@@ -280,6 +280,17 @@ def redactor_jobs(jobs_id):
     return render_template('redactor_jobs.html', form=form)
 
 
+@app.route('/delete_jobs/<int:jobs_id>', methods=['GET', 'DELETE'])
+@login_required
+def delete_jobs(jobs_id):
+    sess = db_session.create_session()
+    curr_jobs = sess.query(Jobs).filter(Jobs.id == jobs_id).first()
+    if curr_jobs:
+        sess.delete(curr_jobs)
+        sess.commit()
+    return redirect('/')
+
+
 @app.route('/table/<gender>/<int:age>')
 def table(gender, age):
     return render_template('table.html', gender=gender, age=age)

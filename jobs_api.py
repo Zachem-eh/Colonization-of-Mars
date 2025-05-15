@@ -60,34 +60,39 @@ def delete_jobs(jobs_id):
 @blueprint.route('/api/jobs/<int:jobs_id>', methods=['PUT'])
 def put_jobs(jobs_id):
     sess = db_session.create_session()
+    try:
+        if not request.json:
+            return make_response(jsonify({'error': 'Bad request'}), 400)
 
-    if not request.json:
-        return make_response(jsonify({'error': 'Bad request'}), 400)
+        job = sess.query(Jobs).get(jobs_id)
+        if not job:
+            return make_response(jsonify({'error': 'Not found'}), 404)
 
-    job = sess.query(Jobs).get(jobs_id)
-    if not job:
-        return make_response(jsonify({'error': 'Not found'}), 404)
+        params = request.json
 
-    params = request.json
+        required_fields = ['team_leader', 'job', 'collaborators', 'work_size', 'is_finished']
+        if all(params[field] is None for field in required_fields):
+            return make_response(jsonify({"error": "Missing required fields"}), 400)
 
-    required_fields = ['team_leader', 'job', 'collaborators', 'work_size', 'is_finished']
-    if all(params[field] is None for field in required_fields):
-        return make_response(jsonify({"error": "Missing required fields"}), 400)
-
-    for key, value in params.items():
-        if key == 'team_leader' and value:
-            user = sess.query(User).get(value)
-            if not user:
-                return make_response(jsonify({"error": "team_leader not found"}), 400)
-            job.team_leader = value
-        if key == 'collaborators' and value:
-            id_users = [int(x) for x in value.split(', ')]
-            for id_user in id_users:
-                user = sess.query(User).get(id_user)
+        for key, value in params.items():
+            if key == "team_leader" and value:
+                user = sess.query(User).get(value)
                 if not user:
-                    return make_response(jsonify({"error": "collaborator not found"}), 400)
-            job.collaborators = value
-        elif value:
-            setattr(job, key, value)
-    sess.commit()
-    return jsonify({str(jobs_id): 'changed'})
+                    return make_response(jsonify({"error": "team_leader not found"}), 400)
+                job.team_leader = value
+            if key == 'collaborators' and value:
+                id_users = [int(x) for x in value.split(', ')]
+                for id_user in id_users:
+                    user = sess.query(User).get(id_user)
+                    if not user:
+                        return make_response(jsonify({"error": "collaborator not found"}), 400)
+                job.collaborators = value
+            elif value:
+                setattr(job, key, value)
+        sess.commit()
+        return jsonify({str(jobs_id): 'changed'})
+    except Exception as e:
+        sess.rollback()
+        return jsonify({'error': str(e)})
+    finally:
+        sess.close()

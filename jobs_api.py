@@ -70,17 +70,13 @@ def put_jobs(jobs_id):
 
         params = request.json
 
-        required_fields = ['team_leader', 'job', 'collaborators', 'work_size', 'is_finished']
-        if all(params[field] is None for field in required_fields):
-            return make_response(jsonify({"error": "Missing required fields"}), 400)
-
         for key, value in params.items():
             if key == "team_leader" and value:
-                user = sess.query(User).get(value)
+                user = sess.query(User).filter(User.id == value).first()
                 if not user:
                     return make_response(jsonify({"error": "team_leader not found"}), 400)
                 job.team_leader = value
-            if key == 'collaborators' and value:
+            elif key == 'collaborators' and value:
                 id_users = [int(x) for x in value.split(', ')]
                 for id_user in id_users:
                     user = sess.query(User).get(id_user)

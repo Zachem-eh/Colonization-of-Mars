@@ -252,6 +252,34 @@ def jobs():
     return render_template('jobs.html', form=form)
 
 
+@app.route('/redactor_jobs/<int:jobs_id>', methods=['GET', 'POST'])
+@login_required
+def redactor_jobs(jobs_id):
+    form = JobsForm()
+    sess = db_session.create_session()
+    curr_jobs = sess.query(Jobs).filter(Jobs.id == jobs_id).first()
+    if form.validate_on_submit():
+        if not sess.query(User).filter(User.id == int(form.team_leader.data)).first():
+            return render_template('redactor_jobs.html', form=form, message="Такого тимлида нет")
+        users_id = [int(x) for x in form.collaborators.data.split(', ')]
+        for user_id in users_id:
+            if not sess.query(User).filter(User.id == user_id).first():
+                return render_template('redactor_jobs.html', form=form, message="Такого юзера нет")
+        curr_jobs.job = form.title.data
+        curr_jobs.team_leader = int(form.team_leader.data)
+        curr_jobs.work_size = int(form.work_size.data)
+        curr_jobs.collaborators = form.collaborators.data
+        curr_jobs.is_finished = form.finished.data
+        sess.commit()
+        return redirect('/')
+    form.title.data = curr_jobs.job
+    form.team_leader.data =  curr_jobs.team_leader
+    form.work_size.data = curr_jobs.work_size
+    form.collaborators.data = curr_jobs.collaborators
+    form.finished.data = curr_jobs.is_finished
+    return render_template('redactor_jobs.html', form=form)
+
+
 @app.route('/table/<gender>/<int:age>')
 def table(gender, age):
     return render_template('table.html', gender=gender, age=age)

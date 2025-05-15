@@ -10,6 +10,7 @@ from data.users import User
 import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from jobs_api import blueprint
+from users_api import blueprint_user
 from flask_restful import Api
 from user_resource import UserResource, UserListResource
 from jobs_resource import JobsResource, JobsListResource
@@ -275,4 +276,5 @@ def load_photo():
 if __name__ == '__main__':
     db_session.global_init('database/mars_explorer.db')
     app.register_blueprint(blueprint)
+    app.register_blueprint(blueprint_user)
     app.run(host='127.0.0.1', port=8080)

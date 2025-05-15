@@ -15,11 +15,21 @@
         <td class="table-primary">{{ job.user.surname }} {{ job.user.name }}
         <td class="table-primary">{{ job.work_size }}
         <td class="table-primary">{{ job.collaborators }}
-        {% if is_finished %}
+        {% if job.is_finished %}
             <td class="table-success">Задача завершена
         {% else %}
             <td class="table-danger">Задача не завершена
         {% endif %}
     </table>
+    {% if current_user.id == 1 or current_user.id == job.team_leader %}
+        <div class="row">
+            <div class="col">
+                <a href="/redactor_jobs/{{job.id}}" class="btn btn-warning">Редактировать</a>
+            </div>
+            <div class="col">
+                <a href="/delete_jobs/{{job.id}}" class="btn btn-danger">Удалить</a>
+            </div>
+        </div>
+    {% endif %}
 {% endfor %}
 {% endblock %}

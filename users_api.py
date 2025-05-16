@@ -12,7 +12,7 @@ def get_jobs():
     users_list = sess.query(User).all()
     return jsonify({
         'users': [user.to_dict(only=('id', 'name', 'surname', 'age', 'position',
-                                     'speciality', 'address', 'email')) for user in users_list]
+                                     'speciality', 'address', 'email', 'city_from')) for user in users_list]
     })
 
 
@@ -22,15 +22,15 @@ def get_jobs_id(user_id):
     user = sess.query(User).filter(User.id == user_id).first()
     if not user:
         return make_response(jsonify({'status': 'Not found'}), 404)
-    return jsonify({ 'job': user.to_dict(only=('id', 'name', 'surname', 'age', 'position',
-                                              'speciality', 'address', 'email'))})
+    return jsonify({ 'user': user.to_dict(only=('id', 'name', 'surname', 'age', 'position',
+                                              'speciality', 'address', 'email', 'city_from'))})
 
 
 @blueprint_user.route('/api/users', methods=['POST'])
 def create_jobs():
     if not request.json:
         return make_response(jsonify({'error': 'Bad request'}), 400)
-    column = ['name', 'surname', 'age', 'position', 'speciality', 'address', 'email', 'hashed_password']
+    column = ['name', 'surname', 'age', 'position', 'speciality', 'address', 'email', 'hashed_password', 'city_from']
     if not all([key in column for key in request.json]):
         return make_response(jsonify({'error': 'Bad request'}), 400)
     sess = db_session.create_session()
@@ -46,7 +46,7 @@ def create_jobs():
             setattr(user, key, value)
     sess.add(user)
     sess.commit()
-    return jsonify({'jobs.id': user.id})
+    return jsonify({'user.id': user.id})
 
 
 @blueprint_user.route('/api/users/<int:user_id>', methods=['DELETE'])

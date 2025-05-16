@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-center">Nostalgy</h2>
+<h2 class="text-center">{{ user.name }} {{ user.surname }}</h2>
+<h3 class="text-center">Hometown {{ user.city_from }}</h3>
+{% if flag %}
+    <div class="text-center">
+    <img src="{{ url_for('static', filename=user.city_img) }}">
+    </div>
+{% endif %}
+{% endblock %}

@@ -19,6 +19,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = sqlalchemy.Column(sqlalchemy.String, nullable=False, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     modified_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, default=datetime.datetime.now)
+    city_from = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    city_img = sqlalchemy.Column(sqlalchemy.String)
     jobs = orm.relationship('Jobs', back_populates='user')
 
     def set_password(self, password):

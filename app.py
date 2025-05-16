@@ -1,3 +1,4 @@
+import requests
 from flask import Flask, render_template, request, make_response, session
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect, secure_filename
@@ -68,6 +69,7 @@ class RegisterForm(FlaskForm):
     position = StringField('Position')
     speciality = StringField('Speciality')
     address = StringField('Address')
+    city_from = StringField('City')
     submit = SubmitField('Submit')
 
 
@@ -197,6 +199,7 @@ def register():
         user.position = form.position.data
         user.speciality = form.speciality.data
         user.address = form.address.data
+        user.city_from = form.city_from.data
         sess.add(user)
         sess.commit()
         return redirect('/')
@@ -310,6 +313,43 @@ def load_photo():
         img = filename
         return redirect('/load_photo')
     return render_template('load_photo.html', form=form, img=img)
+
+
+@app.route('/users_show/<int:user_id>')
+def users_show(user_id):
+    data_user = requests.get(f'http://127.0.0.1:8080/api/users/{user_id}').json()
+    sess = db_session.create_session()
+    user = sess.query(User).get(user_id)
+    url = 'https://geocode-maps.yandex.ru/1.x'
+    params = {
+        'apikey': '957cd94a-71cc-4433-8fbf-279c95c506aa',
+        'geocode': data_user['user']['city_from'],
+        'lang': 'ru_RU',
+        'format': 'json'
+    }
+    map_flag = False
+    response = requests.get(url=url, params=params)
+    if response:
+        data = response.json()
+        feature = data['response']['GeoObjectCollection']['featureMember']
+        if feature:
+            pos = ','.join(feature[0]['GeoObject']['Point']['pos'].split())
+            url = 'https://static-maps.yandex.ru/v1'
+            params = {
+                'apikey': 'f3a0fe3a-b07e-4840-a1da-06f18b2ddf13',
+                'll': pos,
+                'spn': '0.16457,0.1619'
+            }
+
+            response = requests.get(url, params)
+            if response:
+                with open(f'static/images/map_{user_id}.png', mode='wb') as map_file:
+                    map_file.write(response.content)
+                map_flag = True
+                user.city_img = f'images/map_{user_id}.png'
+                sess.commit()
+    return render_template('users_show.html', flag=map_flag, user=user)
+
 
 
 if __name__ == '__main__':

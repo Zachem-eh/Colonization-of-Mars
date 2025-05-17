@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+{% set member = members|random %}
+<h2 class="text-center mb-4">{{ member.name }} {{ member.surname }}</h2>
+<div class="text-center mb-4"><img src="{{ member.photo }}" height="500"></div>
+<p class="text-center">{{ member.prof|sort|join(', ') }}</p>
+{% endblock %}

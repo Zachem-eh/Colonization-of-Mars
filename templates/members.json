@@ -13,7 +13,7 @@
     {
       "name": "Хаяо",
       "surname": "Миядзаки",
-      "photo": "/static/img/Hayao.jpg",
+      "photo": "/static/images/Hayao.jpg",
       "prof": [
         "режиссер",
         "аниматор",
@@ -23,7 +23,7 @@
     {
       "name": "Александр",
       "surname": "Пушкин",
-      "photo": "/static/img/Pushkin.jpg",
+      "photo": "/static/images/Pushkin.jpg",
       "prof": [
         "писатель",
         "поэт",

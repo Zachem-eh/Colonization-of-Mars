@@ -16,6 +16,7 @@ from flask_restful import Api
 from user_resource import UserResource, UserListResource
 from jobs_resource import JobsResource, JobsListResource
 import os
+import json
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum'
@@ -350,6 +351,12 @@ def users_show(user_id):
                 sess.commit()
     return render_template('users_show.html', flag=map_flag, user=user)
 
+
+@app.route('/member')
+def member():
+    with open('templates/members.json', mode='r', encoding='utf-8') as json_file:
+        members = json.load(json_file)['members']
+    return render_template('member.html', members=members)
 
 
 if __name__ == '__main__':

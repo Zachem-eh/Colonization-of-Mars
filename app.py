@@ -9,6 +9,7 @@ from data import db_session
 from data.jobs import Jobs
 from data.users import User
 from data.departments import Department
+from data.hazards import Hazard
 import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from jobs_api import blueprint
@@ -57,6 +58,7 @@ class JobsForm(FlaskForm):
     team_leader = StringField('ID тим лидера')
     work_size = StringField('Продолжительность')
     collaborators = StringField('Участники')
+    hazard_category = StringField('Категория работы')
     finished = BooleanField('Завершена?')
     submit = SubmitField('Добавить')
 
@@ -252,14 +254,18 @@ def jobs():
     form = JobsForm()
     if form.validate_on_submit():
         sess = db_session.create_session()
+        user = sess.merge(current_user)
+        hazard = sess.query(Hazard).filter(Hazard.id == int(form.hazard_category.data)).first()
         job = Jobs()
         job.job = form.title.data
         job.team_leader = int(form.team_leader.data)
         job.work_size = int(form.work_size.data)
         job.collaborators = form.collaborators.data
         job.is_finished = form.finished.data
-        current_user.jobs.append(job)
-        sess.merge(current_user)
+        job.hazard_category = int(form.hazard_category.data)
+
+        user.jobs.append(job)
+        hazard.jobs.append(job)
         sess.commit()
         return redirect('/')
     return render_template('jobs.html', form=form)
@@ -283,6 +289,7 @@ def redactor_jobs(jobs_id):
         curr_jobs.work_size = int(form.work_size.data)
         curr_jobs.collaborators = form.collaborators.data
         curr_jobs.is_finished = form.finished.data
+        curr_jobs.hazard_category = int(form.hazard_category.data)
         sess.commit()
         return redirect('/')
     form.title.data = curr_jobs.job
@@ -290,6 +297,7 @@ def redactor_jobs(jobs_id):
     form.work_size.data = curr_jobs.work_size
     form.collaborators.data = curr_jobs.collaborators
     form.finished.data = curr_jobs.is_finished
+    form.hazard_category.data = curr_jobs.hazard_category
     return render_template('redactor_jobs.html', form=form)
 
 

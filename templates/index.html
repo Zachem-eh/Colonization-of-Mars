@@ -9,12 +9,14 @@
             <td>Фамилия и имя ответственного
             <td>продолжительность в часах
             <td>список команды
+            <td>категория
             <td>завершена
         <tr>
         <td class="table-primary">{{ job.job }}
         <td class="table-primary">{{ job.user.surname }} {{ job.user.name }}
         <td class="table-primary">{{ job.work_size }}
         <td class="table-primary">{{ job.collaborators }}
+        <td class="table-primary">{{ job.hazard_category }}
         {% if job.is_finished %}
             <td class="table-success">Задача завершена
         {% else %}

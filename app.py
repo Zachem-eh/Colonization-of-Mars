@@ -262,7 +262,7 @@ def redactor_jobs(jobs_id):
     form = JobsForm()
     sess = db_session.create_session()
     curr_jobs = sess.query(Jobs).filter(Jobs.id == jobs_id).first()
-    if form.validate_on_submit():
+    if form.validate_on_submit() and (current_user.id == curr_jobs.team_leader or current_user.id == 1):
         if not sess.query(User).filter(User.id == int(form.team_leader.data)).first():
             return render_template('redactor_jobs.html', form=form, message="Такого тимлида нет")
         users_id = [int(x) for x in form.collaborators.data.split(', ')]
@@ -289,7 +289,7 @@ def redactor_jobs(jobs_id):
 def delete_jobs(jobs_id):
     sess = db_session.create_session()
     curr_jobs = sess.query(Jobs).filter(Jobs.id == jobs_id).first()
-    if curr_jobs:
+    if curr_jobs and (current_user.id == curr_jobs.team_leader or current_user.id == 1):
         sess.delete(curr_jobs)
         sess.commit()
     return redirect('/')

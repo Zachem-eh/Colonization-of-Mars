@@ -284,6 +284,9 @@ def redactor_jobs(jobs_id):
         for user_id in users_id:
             if not sess.query(User).filter(User.id == user_id).first():
                 return render_template('redactor_jobs.html', form=form, message="Такого юзера нет")
+        hazard = sess.query(Hazard).filter(Hazard.id == form.hazard_category.data).first()
+        if not hazard:
+            return render_template('redactor_jobs.html', form=form, message="Такой категории нет")
         curr_jobs.job = form.title.data
         curr_jobs.team_leader = int(form.team_leader.data)
         curr_jobs.work_size = int(form.work_size.data)

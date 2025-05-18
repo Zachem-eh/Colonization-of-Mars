@@ -2,12 +2,13 @@ import requests
 from flask import Flask, render_template, request, make_response, session
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect, secure_filename
-from wtforms import StringField, PasswordField, SubmitField, FileField
+from wtforms import StringField, PasswordField, SubmitField, FileField, IntegerField
 from wtforms.fields.simple import EmailField, BooleanField
 from wtforms.validators import DataRequired
 from data import db_session
 from data.jobs import Jobs
 from data.users import User
+from data.departments import Department
 import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from jobs_api import blueprint
@@ -79,6 +80,14 @@ class LoadPhotoForm(FlaskForm):
                       validators=[DataRequired()],
                       render_kw={'accept': 'image/*'})
     submit = SubmitField('Отправить')
+
+
+class DepartmentsForm(FlaskForm):
+    title = StringField("Название департамента", validators=[DataRequired()])
+    chief = IntegerField('ID шефа', validators=[DataRequired()])
+    members = StringField('Участники', validators=[DataRequired()])
+    email = EmailField('Почта', validators=[DataRequired()])
+    submit = SubmitField('Добавить')
 
 
 @app.route('/')
@@ -357,6 +366,64 @@ def member():
     with open('templates/members.json', mode='r', encoding='utf-8') as json_file:
         members = json.load(json_file)['members']
     return render_template('member.html', members=members)
+
+
+@app.route('/departments')
+def departments():
+    sess = db_session.create_session()
+    deps = sess.query(Department).all()
+    return render_template('departments.html', departments=deps)
+
+
+@app.route('/add_dep', methods=['GET', 'POST'])
+def add_dep():
+    form = DepartmentsForm()
+    if form.validate_on_submit():
+        sess = db_session.create_session()
+        dep = Department()
+        dep.title = form.title.data
+        dep.chief = int(form.chief.data)
+        dep.members = form.members.data
+        dep.email = form.email.data
+        sess.add(dep)
+        sess.commit()
+        return redirect('/departments')
+    return render_template('add_dep.html', form=form)
+
+
+@app.route('/delete_dep/<int:dep_id>', methods=['DELETE', 'GET'])
+def delete_dep(dep_id):
+    sess = db_session.create_session()
+    curr_dep = sess.query(Department).filter(Department.id == dep_id).first()
+    if curr_dep and (current_user.id == curr_dep.chief or current_user.id == 1):
+        sess.delete(curr_dep)
+        sess.commit()
+    return redirect('/departments')
+
+
+@app.route('/redactor_dep/<int:dep_id>', methods=['GET', 'POST'])
+def redactor_dep(dep_id):
+    form = DepartmentsForm()
+    sess = db_session.create_session()
+    curr_dep = sess.query(Department).filter(Department.id == dep_id).first()
+    if form.validate_on_submit() and (current_user.id == curr_dep.chief or current_user.id == 1):
+        if not sess.query(User).filter(User.id == int(form.chief.data)).first():
+            return render_template('redactor_dep.html', form=form, message="Такого шефа нет")
+        users_id = [int(x) for x in form.members.data.split(', ')]
+        for user_id in users_id:
+            if not sess.query(User).filter(User.id == user_id).first():
+                return render_template('redactor_dep.html', form=form, message="Такого юзера нет")
+        curr_dep.title = form.title.data
+        curr_dep.chief = int(form.chief.data)
+        curr_dep.members = form.members.data
+        curr_dep.email = form.email.data
+        sess.commit()
+        return redirect('/departments')
+    form.title.data = curr_dep.title
+    form.chief.data = curr_dep.chief
+    form.members.data = curr_dep.members
+    form.email.data = curr_dep.email
+    return render_template('redactor_dep.html', form=form)
 
 
 if __name__ == '__main__':
